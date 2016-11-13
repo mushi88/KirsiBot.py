@@ -8,7 +8,8 @@ if "%~1"=="-FIXED_CTRL_C" (
    CALL <NUL %0 -FIXED_CTRL_C %*
    GOTO :EOF
 )
-set var=1
+
+set var=0
 cls
 :srcds
 title Launcher - Restarted %var% times...

@@ -80,6 +80,43 @@ def is_int_try(str):
 def logger(message, command):
     print(message.author.name+" used command: "+command)
 
+## Cmd Funcs
+
+async def cmd_test(message):
+    counter = 0
+    tmp = await client.send_message(message.channel, 'Calculating messages...')
+    client.send_typing(message.channel)
+    logger(message, "Test")
+    async for log in client.logs_from(message.channel, limit=100):
+        client.send_typing(message.channel)
+        if log.author == message.author:
+            counter += 1
+    await client.edit_message(tmp, 'You have {} messages.'.format(counter))
+
+
+async def cmd_sleep(message):
+    msg=message.content[len(prefix+'sleep')-1:]
+    if msg.startswith(" "):
+        msg=msg.strip(" ")
+        isint = is_int_try(msg)
+        if isint:
+            msg=int(msg)
+            await client.send_message(message.channel, "Good night!")
+            if msg>280:
+                msg=280
+            print("Sleeping for "+str(msg)+" seconds.")
+            logger(message, "Sleep")
+            await asyncio.sleep(msg)
+            await client.send_message(message.channel, 'Morning~')
+            print("Sleep finished.")
+        else:
+            await client.send_message(message.channel, "Usage: "+prefix+"sleep # -- max 280.")
+    else:
+        await client.send_message(message.channel, "Usage: "+prefix+ "sleep # -- max 280.")
+
+
+## Func Exec
+
 @client.event
 async def on_message(message):
     global prefix
@@ -87,58 +124,21 @@ async def on_message(message):
     global music
     global queue
     global musico
-    if not message.channel.id == "232497426529910786" or not message.channel.id == "241717368160518144":
-        #if message.content.startswith(prefix+'summon'):
-            #if message.author == discord.utils.get(client.get_all_members(), id='193997394411520001'):
-                #if not discord.utils.get(message.server.channels, name='music', type=discord.ChannelType.text)==None:
-                    #txt=discord.utils.get(message.server.channels, name='music', type=discord.ChannelType.text)
-                    #if not discord.utils.get(message.server.channels, name='kirsi', type=discord.ChannelType.voice)==None:
-                        #music=discord.utils.get(message.server.channels, name='kirsi', type=discord.ChannelType.voice)
-                        #await client.send_message(message.channel, "I summon thou great beast, Kirsi Music!")
-                        #os.system("start Kirsi\" \"Music.py")
-                    #elif discord.utils.get(message.server.channels, name='music', type=discord.ChannelType.voice)==None:
-                        #music=discord.utils.get(message.server.channels, name='music', type=discord.ChannelType.voice)
-                        #await client.send_message(message.channel, "I summon thou great beast, Kirsi Music!")
-                        #os.system("start Kirsi\" \"Music.py")
-                    #else:
-                        #print("error")
-                #else:
-                    #print("error")
-                    
-        # --------------------------------------------------------------------------------------------------------- Test
-        if message.content.startswith(prefix+'test') and acctest("Basic", message.author.id):
-            counter = 0
-            tmp = await client.send_message(message.channel, 'Calculating messages...')
-            client.send_typing(message.channel)
-            logger(message, "Test")
-            async for log in client.logs_from(message.channel, limit=100):
-                client.send_typing(message.channel)
-                if log.author == message.author:
-                    counter += 1
-            await client.edit_message(tmp, 'You have {} messages.'.format(counter))
-        # --------------------------------------------------------------------------------------------------------- Sleep
-        elif message.content.startswith(prefix+'sleep') and acctest("Extended", message.author.id):
-            if message.author.server_permissions.administrator:
-                msg=message.content[len(prefix+'sleep')-1:]
-                if msg.startswith(" "):
-                    msg=msg.strip(" ")
-                    isint = is_int_try(msg)
-                    if isint:
-                        msg=int(msg)
-                        await client.send_message(message.channel, "Good night!")
-                        if msg>280:
-                            msg=280
-                        print("Sleeping for "+str(280)+" seconds.")
-                        logger(message, "Sleep")
-                        await asyncio.sleep(msg)
-                        await client.send_message(message.channel, 'Morning~')
-                        print("Sleep finished.")
-                    else:
-                        await client.send_message(message.channel, "Usage: "+prefix+"sleep # -- max 280.")
-                else:
-                    await client.send_message(message.channel, "Usage: "+prefix+ "sleep # -- max 280.")
+    if 1 == 1:
+        if message.content.startswith(prefix+'test'):
+            if not acctest("Banned", message.author.id)
+                await cmd_test(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
+                
+                
+        elif message.content.startswith(prefix+'sleep'):
+            if acctest("Extended", message.author.id):
+                await cmd_sleep(message)
+            else:
+                await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
+
+                
         # --------------------------------------------------------------------------------------------------------- Purge
         elif message.content.startswith(prefix+'purge') and acctest("Extended", message.author.id):
             count = message.content.strip(prefix+'purge')
