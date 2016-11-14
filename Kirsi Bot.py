@@ -115,6 +115,42 @@ async def cmd_sleep(message):
         await client.send_message(message.channel, "Usage: "+prefix+ "sleep # -- max 280.")
 
 
+async def cmd_purge(message):
+    count = message.content.strip(prefix+'purge')
+    if count.startswith(' '):
+        count = count.strip(" ")
+        isint = is_int_try(count)
+        if isint:
+            count = int(count)+1
+            if count > 101:
+                count = 101
+            await client.purge_from(message.channel, limit=count)
+            logger(message, "Purge")
+        else:
+            await client.send_message(message.channel, "```'" +prefix+ "purge #' -- Max 100```")
+    else:
+        await client.send_message(message.channel, "```'"+prefix+"purge #' -- Max 100```")
+
+
+async def cmd_prefix(message):
+    global prefix
+    if len(message.content)==9:
+        if message.author == discord.utils.get(client.get_all_members(), server__id='Un-Go',name='Kirsi') or message.author == discord.utils.get(client.get_all_members(), server__name='Un-Go', name='Inga 因果'):
+            msg=message.content.strip(prefix+"prefix")
+            if msg.startswith(" "):
+                msg=msg.strip(" ")
+                if valid_prefixx.index(msg):
+                    prefix=msg
+                    await client.send_message(message.channel, message.author.mention+" changed prefix to '"+prefix+"'.")
+                else:
+                    await client.send_message(message.channel, message.author.mention+", invalid prefix.")
+            else:
+                await client.send_message(message.channel, message.author.mention+", invalid syntax.")
+        else:
+            await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
+    else:
+        await client.send_message(message.channel, message.author.mention+", invalid syntax.")
+                
 ## Func Exec
 
 @client.event
@@ -139,39 +175,15 @@ async def on_message(message):
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
 
                 
-        # --------------------------------------------------------------------------------------------------------- Purge
-        elif message.content.startswith(prefix+'purge') and acctest("Extended", message.author.id):
-            count = message.content.strip(prefix+'purge')
-            if count.startswith(' '):
-                count = count.strip(" ")
-                isint = is_int_try(count)
-                if isint:
-                    count = int(count)+1
-                    if count > 101:
-                        count = 101
-                    await client.purge_from(message.channel, limit=count)
-                    logger(message, "Purge")
-                else:
-                    await client.send_message(message.channel, "```'" +prefix+ "purge #' -- Max 100```")
+        elif message.content.startswith(prefix+'purge'):
+            if acctest("Extended", message.author.id):
+                await cmd_purge(message)
             else:
-                await client.send_message(message.channel, "```'"+prefix+"purge #' -- Max 100```")
+                await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
+
+                
         elif message.content.startswith(prefix+"prefix") and acctest("Full", message.author.id):
-            if len(message.content)==9:
-                if message.author == discord.utils.get(client.get_all_members(), server__name='Un-Go',name='Kirsi') or message.author == discord.utils.get(client.get_all_members(), server__name='Un-Go', name='Inga 因果'):
-                    msg=message.content.strip(prefix+"prefix")
-                    if msg.startswith(" "):
-                        msg=msg.strip(" ")
-                        if valid_prefixx.index(msg):
-                            prefix=msg
-                            await client.send_message(message.channel, message.author.mention+" changed prefix to '"+prefix+"'.")
-                        else:
-                            await client.send_message(message.channel, message.author.mention+", invalid prefix.")
-                    else:
-                        await client.send_message(message.channel, message.author.mention+", invalid syntax.")
-                else:
-                    await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
-            else:
-                await client.send_message(message.channel, message.author.mention+", invalid syntax.")
+            
         elif message.content.startswith(prefix+"restartkirsi") and acctest("Full", message.author.id):
             await client.send_message(message.channel, "Restarting bot.")
             sys.exit()
