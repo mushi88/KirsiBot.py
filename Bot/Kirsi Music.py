@@ -11,9 +11,9 @@ import os
 import sys
 
 import Settings
+from Settings import Prefix as prefix
 
 client = discord.Client()
-prefix = "+"
 
 resutls = None
 voice = None
@@ -24,7 +24,6 @@ repeat = False
 cooldown=0
 
 playlistqueue=[]
-cmds=["Cmds", "Search", "Volume", "Pause", "Resume", "Skip", "Clear", "Playlist", "Stop", "Shutdown", "Repeat"]
 
 ytsnip="http://www.youtube.com/watch?v="
 vol=.15
@@ -35,6 +34,7 @@ ch = None
 vchannel = None
 user=None
 req=None
+last=None
 
 serverid = Settings.Server
 
@@ -105,29 +105,43 @@ async def download(video):
     global player
     global repeat
     global vol
-    sys.stdout = open(os.devnull, "w")
+    global last
     if repeat:
         try:
+            sys.stdout = open(os.devnull, "w")
             player = await voice.create_ytdl_player("http://www.youtube.com/watch?v="+lastVideo)
+            sys.stdout = sys.__stdout__
             player.volume = vol
             await client.change_presence(game=discord.Game(name=player.title))
             player.start()
             dur=str(time.strftime("%H:%M:%S", time.gmtime(player.duration)))
+            if last=="NowPlaying":
+                print("\nNow playing: "+player.title+" (%s)" % dur)
+            else:
+                last=="NowPlaying"
+                print("\n\nNow playing: "+player.title+" (%s)" % dur)
             await client.send_message(vchannel, "Now playing: "+player.title+" (%s)" % dur)
         except:
             await client.send_message(vchannel, "Error playing: %s. Repeat is now off." % player.title)
             repeat=False
     else:
         try:
+            sys.stdout = open(os.devnull, "w")
             player = await voice.create_ytdl_player("http://www.youtube.com/watch?v="+video)
+            sys.stdout = sys.__stdout__
             player.volume = vol
             await client.change_presence(game=discord.Game(name=player.title))
             player.start()
             dur=str(time.strftime("%H:%M:%S", time.gmtime(player.duration)))
+            if last=="NowPlaying":
+                print("\nNow playing: "+player.title+" (%s)" % dur)
+            else:
+                last=="NowPlaying"
+                print("\n\nNow playing: "+player.title+" (%s)" % dur)
             await client.send_message(vchannel, "Now playing: "+player.title+" (%s)" % dur)
         except:
+            print("Now playing: "+player.title+" (%s)" % dur)
             await client.send_message(vchannel, "Error playing: %s. Skipping..." % player.title)
-    sys.stdout = sys.__stdout__
 
 def search(search):
     global results
@@ -247,21 +261,25 @@ async def cmd_repeat(message):
     global queue
     global repeat
     global lastvideo
+    global last
     if repeat:
         repeat = False
         queue.clear()
         await client.send_message(message.channel, "Repeat toggled off, queue has been cleared.")
+        if last=="Repeat":
+            print("\nRepeat toggled off. [%s]" % message.author.name)
+        else:
+            last=="Repeat"
+            print("\n\nRepeat toggled off. [%s]" % message.author.name)
     else:
         repeat = True
         await client.send_message(message.channel, "Repeat toggled on.")
         lastVideo = player.url[len(player.url)-11:]
-        print("lastVideo set to %s" % lastVideo)
-        
-
-async def cmd_clear(message):
-    global queue
-    queue.clear()
-    await client.send_message(message.channel, "Queue cleared.")
+        if last=="Repeat":
+            print("\nRepeat toggled on. [%s]" % message.author.name)
+        else:
+            last=="Repeat"
+            print("\n\nRepeat toggled on. [%s]" % message.author.name)
 
 
 async def cmd_playlist(message):
@@ -276,10 +294,6 @@ async def cmd_playlist(message):
         await client.send_message(message.channel, "Done. Some songs *MAY* not play. Playlist will not repeat. New queue item amount: %s" % str(len(queue)))
     except:
         await client.send_message(message.channel, "Playlist not found.")
-
-
-async def cmd_cmds(message):
-    await client.send_message(message.channel, "Commands:\n```-"+'\n\n-'.join(cmds)+"```")
     
 
 async def cmd_stop(message):
@@ -364,26 +378,10 @@ async def on_message(message):
                     await client.send_message(message.channel, "Who dafuq you think you are? Ordering me around like that?")
 
                     
-            elif message.content.lower().startswith(prefix+"clear"):
-                 cooldown=1
-                 if acctest("Extended", message.author.id):
-                    await cmd_clear(message)
-                 else:
-                    await client.send_message(message.channel, "Who dafuq you think you are? Ordering me around like that?")
-
-                    
             elif message.content.lower().startswith(prefix + "playlist ") and len(message.content)>10:
                 cooldown=1
                 if acctest("Extended", message.author.id):
                     await cmd_playlist(message)
-                else:
-                    await client.send_message(message.channel, "Who dafuq you think you are? Ordering me around like that?")
-
-                    
-            elif message.content.lower().startswith(prefix+"cmds"):
-                cooldown=1
-                if not acctest("Banned", message.author.id):
-                    await cmd_cmds(message)
                 else:
                     await client.send_message(message.channel, "Who dafuq you think you are? Ordering me around like that?")
 

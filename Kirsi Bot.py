@@ -8,16 +8,27 @@ import re
 import threading
 import types
 import os
+import time
 
 from Bot import Settings
 
-prefix = "~"
+def Prefix(Prefix):
+    global prefix
+    Settings.Change_Prefix(Prefix)
+    prefix=Settings.Prefix
+
+prefix=Settings.Prefix
 client = discord.Client()
 musico=False
 
 valid_prefixx = ["`", ", ", "~", ", ", "!", ", ", "#", ", ", "$", ", ", "%", ", ", "^", ", ", "&", ", ", "*", ", ", "(", ", ", ")", ", ", "-", ", ", "_", ", ", "+", ", ", "="]
 valid_prefix = ''.join(valid_prefixx)
 valid_prefixx = ["`", "~", "!", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "="]
+
+MusicCmds=[prefix+"Search", prefix+"Volume", prefix+"Pause", prefix+"Resume", prefix+"Skip", prefix+"Clear", prefix+"Playlist", prefix+"Stop", prefix+"Shutdown", prefix+"Repeat", prefix+"Url", prefix+"Playlists"]
+Cmds=[prefix+"Test", prefix+"Sleep", prefix+"Purge", prefix+"Shutdown", prefix+"Access", prefix+"Music", prefix+"Cmds"]
+
+cooldown=False
 
 def file_len(fname):
     with open(fname) as f:
@@ -54,6 +65,15 @@ def acctest(p, i):
         except:
             return False
 
+def check():
+    global cooldown
+    if cooldown:
+        time.sleep(1)
+        cooldown=False
+    time.sleep(1)
+    check()
+
+
 @client.event
 async def on_ready():
     print('Logged in as')
@@ -67,6 +87,8 @@ async def on_ready():
         file=open(".\\Bot\\Access\\Full\\"+Settings.User_ID+".txt", "w")
         file.write(Settings.User_ID)
         file.close()
+    thread=threading.Thread(target=check)
+    thread.start()
 
 def is_int_try(str):
     try:
@@ -93,7 +115,7 @@ async def cmd_test(message):
 
 
 async def cmd_sleep(message):
-    msg=message.content[len(prefix+'sleep')-1:]
+    msg=message.content[len(prefix+'sleep'):]
     if msg.startswith(" "):
         msg=msg.strip(" ")
         isint = is_int_try(msg)
@@ -128,23 +150,6 @@ async def cmd_purge(message):
             await client.send_message(message.channel, "```'" +prefix+ "purge #' -- Max 100```")
     else:
         await client.send_message(message.channel, "```'"+prefix+"purge #' -- Max 100```")
-
-
-async def cmd_prefix(message):
-    global prefix
-    if len(message.content)==9:
-        msg=message.content.strip(prefix+"prefix")
-        if msg.startswith(" "):
-            msg=msg.strip(" ")
-            if valid_prefixx.index(msg):
-                prefix=msg
-                await client.send_message(message.channel, message.author.mention+" changed prefix to '"+prefix+"'.")
-            else:
-                await client.send_message(message.channel, message.author.mention+", invalid prefix.")
-        else:
-            await client.send_message(message.channel, message.author.mention+", invalid syntax.")
-    else:
-        await client.send_message(message.channel, message.author.mention+", invalid syntax.")
 
 
 async def cmd_shutdown(message):
@@ -207,59 +212,80 @@ async def cmd_music(message):
         musico=True
     else:
         await client.send_message(message.channel, "Music already started.")
+        
+
+async def cmd_cmds(message):
+    await client.send_message(message.channel, "Commands:\n```"+'\n\n'.join(Cmds)+"```")
+    await client.send_message(message.channel, "Music:\n```"+'\n\n'.join(MusicCmds)+"```")
             
 ## Func Exec
 
 @client.event
 async def on_message(message):
-    if 1 == 1:
+    global cooldown
+    
 
         
-        if message.content.lower().startswith(prefix+'test'):
+    if message.content.lower().startswith(prefix+'test'):
+        if not cooldown:
+            cooldown=True
             if not acctest("Banned", message.author.id):
                 await cmd_test(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
+            cooldown=False
                 
                 
-        elif message.content.lower().startswith(prefix+'sleep'):
+    elif message.content.lower().startswith(prefix+'sleep'):
+        if not cooldown:
+            cooldown=True
             if acctest("Extended", message.author.id):
                 await cmd_sleep(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
 
                 
-        elif message.content.lower().startswith(prefix+'purge'):
+    elif message.content.lower().startswith(prefix+'purge'):
+        if not cooldown:
+            cooldown=True
             if acctest("Extended", message.author.id):
                 await cmd_purge(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
 
                 
-        elif message.content.lower().startswith(prefix+"prefix"):
-            if acctest("Full", message.author.id):
-                await cmd_prefix(message)
-            else:
-                await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
-
-                
-        elif message.content.lower().startswith(prefix+"shutdown"):
+    elif message.content.lower().startswith(prefix+"shutdown"):
+        if not cooldown:
+            cooldown=True
             if acctest("Full", message.author.id):
                 await cmd_shutdown(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
                 
             
-        elif message.content.lower().startswith(prefix+"access "):
+    elif message.content.lower().startswith(prefix+"access "):
+        if not cooldown:
+            cooldown=True
             if acctest("Full", message.author.id):
                 await cmd_access(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
                 
             
-        elif message.content.lower().startswith(prefix+"music"):
+    elif message.content.lower().startswith(prefix+"music"):
+        if not cooldown:
+            cooldown=True
             if acctest("Full", message.author.id):
-                await cmd_prefix(message)
+                await cmd_music(message)
+            else:
+                await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
+
+
+    elif message.content.lower().startswith(prefix+"cmds"):
+        if not cooldown:
+            cooldown=True
+            if not acctest("Banned", message.author.id):
+                await cmd_cmds(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
 
