@@ -216,7 +216,7 @@ async def on_message(message):
 
         
         if message.content.lower().startswith(prefix+'test'):
-            if not acctest("Banned", message.author.id)
+            if not acctest("Banned", message.author.id):
                 await cmd_test(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
