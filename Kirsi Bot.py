@@ -12,11 +12,6 @@ import time
 
 from Bot import Settings
 
-def Prefix(Prefix):
-    global prefix
-    Settings.Change_Prefix(Prefix)
-    prefix=Settings.Prefix
-
 prefix=Settings.Prefix
 client = discord.Client()
 musico=False
