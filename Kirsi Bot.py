@@ -13,8 +13,6 @@ from Bot import Settings
 
 prefix = "~"
 client = discord.Client()
-txt=None
-music=None
 musico=False
 
 valid_prefixx = ["`", ", ", "~", ", ", "!", ", ", "#", ", ", "$", ", ", "%", ", ", "^", ", ", "&", ", ", "*", ", ", "(", ", ", ")", ", ", "-", ", ", "_", ", ", "+", ", ", "="]
@@ -135,106 +133,134 @@ async def cmd_purge(message):
 async def cmd_prefix(message):
     global prefix
     if len(message.content)==9:
-        if message.author == discord.utils.get(client.get_all_members(), server__id='Un-Go',name='Kirsi') or message.author == discord.utils.get(client.get_all_members(), server__name='Un-Go', name='Inga 因果'):
-            msg=message.content.strip(prefix+"prefix")
-            if msg.startswith(" "):
-                msg=msg.strip(" ")
-                if valid_prefixx.index(msg):
-                    prefix=msg
-                    await client.send_message(message.channel, message.author.mention+" changed prefix to '"+prefix+"'.")
-                else:
-                    await client.send_message(message.channel, message.author.mention+", invalid prefix.")
+        msg=message.content.strip(prefix+"prefix")
+        if msg.startswith(" "):
+            msg=msg.strip(" ")
+            if valid_prefixx.index(msg):
+                prefix=msg
+                await client.send_message(message.channel, message.author.mention+" changed prefix to '"+prefix+"'.")
             else:
-                await client.send_message(message.channel, message.author.mention+", invalid syntax.")
+                await client.send_message(message.channel, message.author.mention+", invalid prefix.")
         else:
-            await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
+            await client.send_message(message.channel, message.author.mention+", invalid syntax.")
     else:
         await client.send_message(message.channel, message.author.mention+", invalid syntax.")
-                
+
+
+async def cmd_shutdown(message):
+    await client.send_message(message.channel, "Bot is shutting down...")
+    client.close()
+    exit()
+
+
+async def cmd_access(message):
+    user=message.content[len(prefix+"access "):]
+    To=None
+    if user.lower().startswith("full "):
+        To="Full"
+        user=user[len("full "):]
+    elif user.lower().startswith("extended "):
+        To="Extended"
+        user=user[len("extended "):]
+    elif user.lower().startswith("banned "):
+        To="Banned"
+        user=user[len("banned "):]
+    else:
+        await client.send_message(message.channel, "Usage: \n ```"+prefix+"Access Full/Extended/Banned Grant/Remove Name```")
+    if user.lower().startswith("grant "):
+        user=user[len("grant "):]
+        user=discord.utils.get(client.get_all_members(), server__id=message.server.id, name=user)
+        name=user
+        if not user==None:
+            user=user.id
+            if not acctest(To, user):
+                file=open(".\\Bot\\Access\\"+To+"\\"+user+".txt", "w")
+                file.write(user)
+                file.close()
+                await client.send_message(message.channel, message.author.mention+", Added "+str(name)+" to "+To+" list.")
+            else:
+                await client.send_message(message.channel, message.author.mention+", User already in list.")
+        else:
+            await client.send_message(message.channel, "Could not find user specified.")
+    elif user.lower().startswith("remove "):
+        user=user[len("remove "):]
+        user=discord.utils.get(client.get_all_members(), server__id=message.server.id, name=user)
+        name=user
+        if not user==None:
+            user=user.id
+            if acctest(To, user):
+                try:
+                    os.remove(".\\Bot\\Access\\"+To+"\\"+user+".txt")
+                    await client.send_message(message.channel, message.author.mention+", Removed "+str(name)+" from "+To+" list.")
+                except:
+                    await client.send_message(message.channel, "Failed to remove..")
+            else:
+                await client.send_message(message.channel, "Failed, user not in list.")
+        else:
+            await client.send_message(message.channel, message.author.mention+", User not found.")
+
+
+async def cmd_music(message):
+    global musico
+    if not musico:
+        exec(open(".\\Bot\\Kirsi Music.py").read())
+        musico=True
+    else:
+        await client.send_message(message.channel, "Music already started.")
+            
 ## Func Exec
 
 @client.event
 async def on_message(message):
-    global prefix
-    global txt
-    global music
-    global queue
-    global musico
     if 1 == 1:
-        if message.content.startswith(prefix+'test'):
+
+        
+        if message.content.lower().startswith(prefix+'test'):
             if not acctest("Banned", message.author.id)
                 await cmd_test(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
                 
                 
-        elif message.content.startswith(prefix+'sleep'):
+        elif message.content.lower().startswith(prefix+'sleep'):
             if acctest("Extended", message.author.id):
                 await cmd_sleep(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
 
                 
-        elif message.content.startswith(prefix+'purge'):
+        elif message.content.lower().startswith(prefix+'purge'):
             if acctest("Extended", message.author.id):
                 await cmd_purge(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
 
                 
-        elif message.content.startswith(prefix+"prefix") and acctest("Full", message.author.id):
-            
-        elif message.content.startswith(prefix+"restartkirsi") and acctest("Full", message.author.id):
-            await client.send_message(message.channel, "Restarting bot.")
-            sys.exit()
-        elif message.content.lower().startswith(prefix+"access ") and acctest("Full", message.author.id):
-            cooldown=1
-            user=message.content[len(prefix+"access "):]
-            To=None
-            if user.lower().startswith("full "):
-                To="Full"
-                user=user[len("full "):]
-            elif user.lower().startswith("extended "):
-                To="Extended"
-                user=user[len("extended "):]
-            elif user.lower().startswith("banned "):
-                To="Banned"
-                user=user[len("banned "):]
+        elif message.content.lower().startswith(prefix+"prefix"):
+            if acctest("Full", message.author.id):
+                await cmd_prefix(message)
             else:
-                await client.send_message(message.channel, "Usage: \n ```"+prefix+"Access Full/Extended/Banned Grant/Remove Name```")
-            if user.lower().startswith("grant "):
-                user=user[len("grant "):]
-                user=discord.utils.get(client.get_all_members(), server__id=message.server.id, name=user)
-                name=user
-                if not user==None:
-                    user=user.id
-                    if not acctest(To, user):
-                        file=open(".\\Bot\\Access\\"+To+"\\"+user+".txt", "w")
-                        file.write(user)
-                        file.close()
-                        await client.send_message(message.channel, message.author.mention+", Added "+str(name)+" to "+To+" list.")
-                    else:
-                        await client.send_message(message.channel, message.author.mention+", User already in list.")
-                else:
-                    await client.send_message(message.channel, "Could not find user specified.")
-            elif user.lower().startswith("remove "):
-                user=user[len("remove "):]
-                user=discord.utils.get(client.get_all_members(), server__id=message.server.id, name=user)
-                name=user
-                if not user==None:
-                    user=user.id
-                    if acctest(To, user):
-                        try:
-                            os.remove(".\\Bot\\Access\\"+To+"\\"+user+".txt")
-                            await client.send_message(message.channel, message.author.mention+", Removed "+str(name)+" from "+To+" list.")
-                        except:
-                            await client.send_message(message.channel, "Failed to remove..")
-                    else:
-                        await client.send_message(message.channel, "Failed, user not in list.")
-                else:
-                    await client.send_message(message.channel, message.author.mention+", User not found.")
-        elif message.content.lower().startswith(prefix+"music") and acctest("Full", message.author.id) and not music:
-            os.system("start Bot\\Kirsi\" \"Music.py")
-            musico=True
+                await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
+
+                
+        elif message.content.lower().startswith(prefix+"shutdown"):
+            if acctest("Full", message.author.id):
+                await cmd_shutdown(message)
+            else:
+                await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
+                
+            
+        elif message.content.lower().startswith(prefix+"access "):
+            if acctest("Full", message.author.id):
+                await cmd_access(message)
+            else:
+                await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
+                
+            
+        elif message.content.lower().startswith(prefix+"music"):
+            if acctest("Full", message.author.id):
+                await cmd_prefix(message)
+            else:
+                await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
 
 client.run(Settings.Token)
