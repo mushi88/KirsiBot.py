@@ -21,7 +21,7 @@ valid_prefix = ''.join(valid_prefixx)
 valid_prefixx = ["`", "~", "!", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "="]
 
 MusicCmds=[prefix+"Search", prefix+"Volume", prefix+"Pause", prefix+"Resume", prefix+"Skip", prefix+"Clear", prefix+"Playlist", prefix+"Stop", prefix+"Shutdown", prefix+"Repeat", prefix+"Url", prefix+"Playlists"]
-Cmds=[prefix+"Test", prefix+"Sleep", prefix+"Purge", prefix+"Shutdown", prefix+"Access", prefix+"Music", prefix+"Cmds"]
+Cmds=[prefix+"Test", prefix+"Sleep", prefix+"Purge", prefix+"Shutdown", prefix+"Access", prefix+"Music", prefix+"Ping!", prefix+"Cmds"]
 
 cooldown=False
 
@@ -212,7 +212,11 @@ async def cmd_music(message):
 async def cmd_cmds(message):
     await client.send_message(message.channel, "Commands:\n```"+'\n\n'.join(Cmds)+"```")
     await client.send_message(message.channel, "Music:\n```"+'\n\n'.join(MusicCmds)+"```")
-            
+
+
+async def cmd_pingpong(message):
+    print("Pong!")
+    
 ## Func Exec
 
 @client.event
@@ -281,6 +285,15 @@ async def on_message(message):
             cooldown=True
             if not acctest("Banned", message.author.id):
                 await cmd_cmds(message)
+            else:
+                await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
+                
+                
+    elif message.content.lower().startswith(prefix+"ping"):
+        if not cooldown:
+            cooldown=True
+            if not acctest("Banned", message.author.id):
+                await cmd_pingpong(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
 
