@@ -177,8 +177,8 @@ async def check():
     if len(queue)>0 and player.is_done():
         await download(queue[0])
         queue.remove(queue[0])
-    elif player.is_done() and len(queue)==0 and not user.game==discord.Game(name="+cmds for commands"):
-        await client.change_presence(game=discord.Game(name="+cmds for commands"))
+    elif player.is_done() and len(queue)==0 and not user.game==discord.Game(name="{}cmds for commands".format(prefix)):
+        await client.change_presence(game=discord.Game(name="{}cmds for commands".format(prefix)))
     if cooldown==1:
         await asyncio.sleep(1)
         cooldown=0
