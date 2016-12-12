@@ -80,7 +80,7 @@ async def on_ready():
     print("Logged in as:")
     print(client.user.name)
     print("-------")
-    await client.change_presence(game=discord.Game(name="+cmds for commands"))
+    await client.change_presence(game=discord.Game(name="{}cmds for commands".format(prefix)))
     user=discord.utils.get(client.get_all_members(), id=client.user.id)
     voice = await client.join_voice_channel(discord.utils.get(client.get_all_channels(), id=Settings.Voice_Channel))
     sys.stdout = open(os.devnull, "w")
