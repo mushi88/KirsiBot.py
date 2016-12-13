@@ -281,7 +281,7 @@ async def on_message(message):
     elif message.content.lower().startswith(prefix+"shutdown"):
         if not cooldown:
             cooldown=True
-            if acctest("Full", message.author.id):
+            if acctest("Owner", message.author.id):
                 await cmd_shutdown(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
@@ -290,7 +290,7 @@ async def on_message(message):
     elif message.content.lower().startswith(prefix+"access "):
         if not cooldown:
             cooldown=True
-            if acctest("Full", message.author.id):
+            if acctest("Owner", message.author.id):
                 await cmd_access(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
