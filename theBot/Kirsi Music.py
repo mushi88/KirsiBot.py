@@ -73,82 +73,45 @@ req=None
 last=None
 
 
-
 serverid = Settings.Server
-
 
 
 # -------------------- Permissions
 
-
-
 def acctest(p, i):
-
     if p=="Banned":
-
         try:
-
             file=open(".\\theBot\\Access\\Banned\\"+i+".txt")
-
             file.close()
-
             return True
-
         except:
-
             return False
-
     try:
-
         file=open(".\\theBot\\Access\\Banned\\"+i+".txt")
-
         file.close()
-
         return False
-
     except:
-
         pass
-
     if p=="Extended":
-
         try:
-
             file=open(".\\theBot\\Access\\Extended\\"+i+".txt")
-
             file.close()
             return True
-
         except:
-
             pass
-
     if p=="Full" or p=="Extended":
-        
         try:
-
             file=open(".\\theBot\\Access\\Full\\"+i+".txt")
-
             file.close()
-
             return True
-
         except:
-
             pass
-        
     if p=="Owner" or p=="Full" or p=="Extended":
-
         try:
-
-            file=open(".\\theBot\\Access\\Full\\"+i+".txt")
-
+            file=open(".\\theBot\\Access\\Owner\\"+i+".txt")
             file.close()
-
             return True
-
         except:
-
             return False
 
 # -------------------- Funcs (Messy)

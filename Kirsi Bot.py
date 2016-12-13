@@ -63,7 +63,7 @@ def acctest(p, i):
             return True
         except:
             pass
-    if p=="Owner" or p=="Full" or p=="Extended"
+    if p=="Owner" or p=="Full" or p=="Extended":
         try:
             file=open(".\\theBot\\Access\\Owner\\"+i+".txt")
             file.close()
@@ -189,6 +189,7 @@ async def cmd_access(message):
         To="Banned"
         user=user[len("banned "):]
     elif user.lower().startswith("owner "):
+        To="Owner"
         user=user[len("owner "):]
     else:
         await client.send_message(message.channel, "Usage: \n ```"+prefix+"Access Owner/Full/Extended/Banned Grant/Remove Name```")
