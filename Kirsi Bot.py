@@ -26,6 +26,8 @@ valid_prefixx = ["`", "~", "!", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_"
 
 MusicCmds=[prefix+"Search", prefix+"Volume", prefix+"Pause", prefix+"Resume", prefix+"Skip", prefix+"Clear", prefix+"Playlist", prefix+"Stop", prefix+"Shutdown", prefix+"Repeat", prefix+"Url", prefix+"Playlists"]
 Cmds=[prefix+"Test", prefix+"Sleep", prefix+"Purge", prefix+"Shutdown", prefix+"Access", prefix+"Music", prefix+"Ping!", prefix+"Cmds"]
+MusicLevels=["Banned", "Extended", "Extended", "Extended", "Extended", "Extended", "Extended", "Extended", "Owner", "Banned"]
+CmdLevels=["Banned", "Extended", "Extended", "Owner", "Owner", "Full", "Banned", "Banned"]
 
 cooldown=False
 
@@ -236,21 +238,53 @@ async def cmd_music(message):
 
 
 async def cmd_cmds(message):
-    await client.send_message(message.channel, "Commands:\n```"+'\n\n'.join(Cmds)+"```")
-    await client.send_message(message.channel, "Music:\n```"+'\n\n'.join(MusicCmds)+"```")
+    AvaiCmds=[]
+    AvaiMusic=[]
+    if acctest("Banned", message.author.id):
+        AvaiCmds.append("You have no available commands.")
+        AvaiMusic.append("You have no available commands.")
+    elif acctest("Owner", message.author.id):
+        for x in range(len(Cmds)):
+            if CmdsLevels[x]=="Banned" or CmdsLevels[x]=="Extended" or CmdsLevels[x]=="Owner":
+                AvaiCmds.append(Cmds[x])
+        for x in range(len(MusicCmds)):
+            if MusicLevels[x]=="Banned" or MusicLevels[x]=="Extended" or MusicLevels[x]=="Owner":
+                AvaiCmds.append(MusicCmds[x])
+    elif acctest("Full", message.author.id):
+        for x in range(len(Cmds)):
+            if CmdsLevels[x]=="Banned" or CmdsLevels[x]=="Extended" or CmdsLevels[x]=="Full":
+                AvaiCmds.append(Cmds[x])
+        for x in range(len(MusicCmds)):
+            if MusicLevels[x]=="Banned" or MusicLevels[x]=="Extended" or MusicLevels[x]=="Full":
+                AvaiMusic.append(MusicCmds[x])
+    elif acctest("Extended", message.author.id):
+        for x in range(len(Cmds)):
+            if CmdsLevels[x]=="Banned" or CmdsLevels[x]=="Extended":
+                AvaiCmds.append(Cmds[x])
+        for x in range(len(MusicCmds)):
+            if MusicLevels[x]=="Banned" or MusicLevels[x]=="Extended":
+                AvaiMusic.append(MusicCmds[x])
+    elif not acctest("Banned", message.author.id):
+        for x in range(len(Cmds)):
+            if CmdsLevels[x]=="Banned":
+                AvaiCmds.append(Cmds[x])
+        for x in range(len(MusicCmds))
+            if MusicLevels[x]=="Banned":
+                AvaiMusic.append(MusicCmds[x])
+                
+    await client.send_message(message.channel, "Commands:\n```"+'\n\n'.join(AvaiCmds)+"```")
+    await client.send_message(message.channel, "Music:\n```"+'\n\n'.join(AvaiMusic)+"```")
 
 
 async def cmd_pingpong(message):
-    await client.send_message(message.channel, "Pong!")
+    await client.send_message(message.channel, "Pong!")    
 
 ## Func Exec
 
 @client.event
 async def on_message(message):
     global cooldown
-
-
-
+    
     if message.content.lower().startswith(prefix+'test'):
         if not cooldown:
             cooldown=True
