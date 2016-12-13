@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from theBot import Settings
 import discord
 import asyncio
 import urllib
@@ -9,12 +10,15 @@ import threading
 import types
 import os
 import time
+import sys
 
-from Bot import Settings
+sys.setrecursionlimit(sys.maxsize)
 
 prefix=Settings.Prefix
 client = discord.Client()
 musico=False
+
+loop=1
 
 valid_prefixx = ["`", ", ", "~", ", ", "!", ", ", "#", ", ", "$", ", ", "%", ", ", "^", ", ", "&", ", ", "*", ", ", "(", ", ", ")", ", ", "-", ", ", "_", ", ", "+", ", ", "="]
 valid_prefix = ''.join(valid_prefixx)
@@ -34,40 +38,52 @@ def file_len(fname):
 def acctest(p, i):
     if p=="Banned":
         try:
-            file=open(".\\Bot\\Access\\Banned\\"+i+".txt")
+            file=open(".\\theBot\\Access\\Banned\\"+i+".txt")
             file.close()
             return True
         except:
             return False
     try:
-        file=open(".\\Bot\\Access\\Banned\\"+i+".txt")
+        file=open(".\\theBot\\Access\\Banned\\"+i+".txt")
         file.close()
         return False
     except:
-        hi=None
+        pass
     if p=="Extended":
         try:
-            file=open(".\\Bot\\Access\\Extended\\"+i+".txt")
+            file=open(".\\theBot\\Access\\Extended\\"+i+".txt")
             file.close()
             return True
         except:
-            hi=None
+            pass
     if p=="Full" or p=="Extended":
         try:
-            file=open(".\\Bot\\Access\\Full\\"+i+".txt")
+            file=open(".\\theBot\\Access\\Full\\"+i+".txt")
             file.close()
             return True
         except:
             return False
 
 def check():
+    global loop
     global cooldown
     if cooldown:
         time.sleep(1)
         cooldown=False
     time.sleep(1)
+    if loop==sys.maxsize - 1:
+        sys.exit()
+    else:
+        loop += 1
     check()
 
+def Execute(f):
+    if sys.platform=="win32":
+        os.system(f)
+    elif sys.platform=="linux":
+        os.system("xdg-open "+f)
+    else:
+        os.system("open "+f)
 
 @client.event
 async def on_ready():
@@ -76,10 +92,10 @@ async def on_ready():
     print(client.user.id)
     print('------')
     if Settings.Autorun_Music==True:
-        os.system("start Bot\\Kirsi\" \"Music.py")
+        os.system("start theBot\\Kirsi\" \"Music.py")
         musico=True
     if not acctest("Full", Settings.User_ID):
-        file=open(".\\Bot\\Access\\Full\\"+Settings.User_ID+".txt", "w")
+        file=open(".\\theBot\\Access\\Full\\"+Settings.User_ID+".txt", "w")
         file.write(Settings.User_ID)
         file.close()
     thread=threading.Thread(target=check)
@@ -174,7 +190,7 @@ async def cmd_access(message):
         if not user==None:
             user=user.id
             if not acctest(To, user):
-                file=open(".\\Bot\\Access\\"+To+"\\"+user+".txt", "w")
+                file=open(".\\theBot\\Access\\"+To+"\\"+user+".txt", "w")
                 file.write(user)
                 file.close()
                 await client.send_message(message.channel, message.author.mention+", Added "+str(name)+" to "+To+" list.")
@@ -190,7 +206,7 @@ async def cmd_access(message):
             user=user.id
             if acctest(To, user):
                 try:
-                    os.remove(".\\Bot\\Access\\"+To+"\\"+user+".txt")
+                    os.remove(".\\theBot\\Access\\"+To+"\\"+user+".txt")
                     await client.send_message(message.channel, message.author.mention+", Removed "+str(name)+" from "+To+" list.")
                 except:
                     await client.send_message(message.channel, "Failed to remove..")
@@ -203,11 +219,11 @@ async def cmd_access(message):
 async def cmd_music(message):
     global musico
     if not musico:
-        exec(open(".\\Bot\\Kirsi Music.py").read())
+        Execute("theBot\\Kirsi Music.py")
         musico=True
     else:
         await client.send_message(message.channel, "Music already started.")
-        
+
 
 async def cmd_cmds(message):
     await client.send_message(message.channel, "Commands:\n```"+'\n\n'.join(Cmds)+"```")
@@ -215,16 +231,16 @@ async def cmd_cmds(message):
 
 
 async def cmd_pingpong(message):
-    print("Pong!")
-    
+    await client.send_message(message.channel, "Pong!")
+
 ## Func Exec
 
 @client.event
 async def on_message(message):
     global cooldown
-    
 
-        
+
+
     if message.content.lower().startswith(prefix+'test'):
         if not cooldown:
             cooldown=True
@@ -233,8 +249,8 @@ async def on_message(message):
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
             cooldown=False
-                
-                
+
+
     elif message.content.lower().startswith(prefix+'sleep'):
         if not cooldown:
             cooldown=True
@@ -243,7 +259,7 @@ async def on_message(message):
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
 
-                
+
     elif message.content.lower().startswith(prefix+'purge'):
         if not cooldown:
             cooldown=True
@@ -252,7 +268,7 @@ async def on_message(message):
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
 
-                
+
     elif message.content.lower().startswith(prefix+"shutdown"):
         if not cooldown:
             cooldown=True
@@ -260,8 +276,8 @@ async def on_message(message):
                 await cmd_shutdown(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
-                
-            
+
+
     elif message.content.lower().startswith(prefix+"access "):
         if not cooldown:
             cooldown=True
@@ -269,8 +285,8 @@ async def on_message(message):
                 await cmd_access(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
-                
-            
+
+
     elif message.content.lower().startswith(prefix+"music"):
         if not cooldown:
             cooldown=True
@@ -287,8 +303,8 @@ async def on_message(message):
                 await cmd_cmds(message)
             else:
                 await client.send_message(message.channel, message.author.mention+", insufficient permissions.")
-                
-                
+
+
     elif message.content.lower().startswith(prefix+"ping"):
         if not cooldown:
             cooldown=True
