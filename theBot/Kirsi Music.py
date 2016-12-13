@@ -135,9 +135,21 @@ def acctest(p, i):
 
         except:
 
+            pass
+        
+    if p=="Owner" or p=="Full" or p=="Extended":
+
+        try:
+
+            file=open(".\\theBot\\Access\\Full\\"+i+".txt")
+
+            file.close()
+
+            return True
+
+        except:
+
             return False
-
-
 
 # -------------------- Funcs (Messy)
 
@@ -793,7 +805,7 @@ async def on_message(message):
 
                 cooldown=1
 
-                if acctest("Full", message.author.id):
+                if acctest("Owner", message.author.id):
 
                     await cmd_shutdown(message)
 

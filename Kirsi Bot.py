@@ -62,6 +62,13 @@ def acctest(p, i):
             file.close()
             return True
         except:
+            pass
+    if p=="Owner" or p=="Full" or p=="Extended"
+        try:
+            file=open(".\\theBot\\Access\\Owner\\"+i+".txt")
+            file.close()
+            return True
+        except:
             return False
 
 def check():
@@ -94,7 +101,7 @@ async def on_ready():
     if Settings.Autorun_Music==True:
         os.system("start theBot\\Kirsi\" \"Music.py")
         musico=True
-    if not acctest("Full", Settings.User_ID):
+    if not acctest("Owner", Settings.User_ID):
         file=open(".\\theBot\\Access\\Full\\"+Settings.User_ID+".txt", "w")
         file.write(Settings.User_ID)
         file.close()
@@ -181,8 +188,10 @@ async def cmd_access(message):
     elif user.lower().startswith("banned "):
         To="Banned"
         user=user[len("banned "):]
+    elif user.lower().startswith("owner "):
+        user=user[len("owner "):]
     else:
-        await client.send_message(message.channel, "Usage: \n ```"+prefix+"Access Full/Extended/Banned Grant/Remove Name```")
+        await client.send_message(message.channel, "Usage: \n ```"+prefix+"Access Owner/Full/Extended/Banned Grant/Remove Name```")
     if user.lower().startswith("grant "):
         user=user[len("grant "):]
         user=discord.utils.get(client.get_all_members(), server__id=message.server.id, name=user)
