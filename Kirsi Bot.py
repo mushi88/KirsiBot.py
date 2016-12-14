@@ -245,11 +245,11 @@ async def cmd_cmds(message):
         AvaiMusic.append("You have no available commands.")
     elif acctest("Owner", message.author.id):
         for x in range(0, len(Cmds)):
-            if CmdLevels[x]=="Banned" or CmdLevels[x]=="Extended" or CmdLevels[x]=="Owner":
+            if CmdLevels[x]=="Banned" or CmdLevels[x]=="Extended" or CmdLevels[x]=="Full" or CmdLevels[x]=="Owner":
                 AvaiCmds.append(Cmds[x])
         for x in range(0, len(MusicCmds)):
-            if MusicLevels[x]=="Banned" or MusicLevels[x]=="Extended" or MusicLevels[x]=="Owner":
-                AvaiCmds.append(MusicCmds[x])
+            if MusicLevels[x]=="Banned" or MusicLevels[x]=="Extended" or MusicLevels[x]=="Full" or MusicLevels[x]=="Owner":
+                AvaiMusic.append(MusicCmds[x])
     elif acctest("Full", message.author.id):
         for x in range(0, len(Cmds)):
             if CmdLevels[x]=="Banned" or CmdsLevel[x]=="Extended" or CmdsLevel[x]=="Full":
@@ -274,7 +274,6 @@ async def cmd_cmds(message):
 
     await client.send_message(message.channel, "Commands:\n```"+'\n\n'.join(AvaiCmds)+"```")
     await client.send_message(message.channel, "Music:\n```"+'\n\n'.join(AvaiMusic)+"```")
-
 
 async def cmd_pingpong(message):
     await client.send_message(message.channel, "Pong!")
