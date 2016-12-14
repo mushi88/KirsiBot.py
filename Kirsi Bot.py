@@ -102,10 +102,10 @@ async def on_ready():
     print(client.user.id)
     print('------')
     if Settings.Autorun_Music==True:
-        os.system("start theBot\\Kirsi\" \"Music.py")
+        Execute("theBot\\Kirsi Music.py")
         musico=True
     if not acctest("Owner", Settings.User_ID):
-        file=open(".\\theBot\\Access\\Full\\"+Settings.User_ID+".txt", "w")
+        file=open(".\\theBot\\Access\\Owner\\"+Settings.User_ID+".txt", "w")
         file.write(Settings.User_ID)
         file.close()
     thread=threading.Thread(target=check)
