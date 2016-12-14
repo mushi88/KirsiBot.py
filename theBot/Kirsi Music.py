@@ -690,7 +690,7 @@ async def on_message(message):
 
                 if acctest("Extended", message.author.id):
 
-                    await cmd_pause()
+                    await cmd_pause(message)
 
                 else:
 
