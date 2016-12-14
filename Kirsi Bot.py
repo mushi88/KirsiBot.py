@@ -88,7 +88,8 @@ def check():
 
 def Execute(f):
     if sys.platform=="win32":
-        os.system(f)
+        f=f.replace(' ', '" "')
+        os.system("start "+f)
     elif sys.platform=="linux":
         os.system("xdg-open "+f)
     else:
