@@ -26,7 +26,7 @@ valid_prefixx = ["`", "~", "!", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_"
 
 MusicCmds=[prefix+"Search", prefix+"Volume", prefix+"Pause", prefix+"Resume", prefix+"Skip", prefix+"Clear", prefix+"Playlist", prefix+"Stop", prefix+"Shutdown", prefix+"Repeat", prefix+"Url", prefix+"Playlists"]
 Cmds=[prefix+"Test", prefix+"Sleep", prefix+"Purge", prefix+"Shutdown", prefix+"Access", prefix+"Music", prefix+"Ping!", prefix+"Cmds"]
-MusicLevels=["Banned", "Extended", "Extended", "Extended", "Extended", "Extended", "Extended", "Extended", "Owner", "Banned"]
+MusicLevels=["Banned", "Extended", "Extended", "Extended", "Extended", "Extended", "Extended", "Extended", "Owner", "Extended", "Banned", "Banned"]
 CmdLevels=["Banned", "Extended", "Extended", "Owner", "Owner", "Full", "Banned", "Banned"]
 
 cooldown=False
@@ -244,31 +244,31 @@ async def cmd_cmds(message):
         AvaiCmds.append("You have no available commands.")
         AvaiMusic.append("You have no available commands.")
     elif acctest("Owner", message.author.id):
-        for x in range(len(Cmds)):
-            if CmdsLevels[x]=="Banned" or CmdsLevels[x]=="Extended" or CmdsLevels[x]=="Owner":
+        for x in range(0, len(Cmds)):
+            if CmdLevels[x]=="Banned" or CmdLevels[x]=="Extended" or CmdLevels[x]=="Owner":
                 AvaiCmds.append(Cmds[x])
-        for x in range(len(MusicCmds)):
+        for x in range(0, len(MusicCmds)):
             if MusicLevels[x]=="Banned" or MusicLevels[x]=="Extended" or MusicLevels[x]=="Owner":
                 AvaiCmds.append(MusicCmds[x])
     elif acctest("Full", message.author.id):
-        for x in range(len(Cmds)):
-            if CmdsLevels[x]=="Banned" or CmdsLevels[x]=="Extended" or CmdsLevels[x]=="Full":
+        for x in range(0, len(Cmds)):
+            if CmdLevels[x]=="Banned" or CmdsLevel[x]=="Extended" or CmdsLevel[x]=="Full":
                 AvaiCmds.append(Cmds[x])
-        for x in range(len(MusicCmds)):
+        for x in range(0, len(MusicCmds)):
             if MusicLevels[x]=="Banned" or MusicLevels[x]=="Extended" or MusicLevels[x]=="Full":
                 AvaiMusic.append(MusicCmds[x])
     elif acctest("Extended", message.author.id):
-        for x in range(len(Cmds)):
-            if CmdsLevels[x]=="Banned" or CmdsLevels[x]=="Extended":
+        for x in range(0, len(Cmds)):
+            if CmdLevels[x]=="Banned" or CmdLevels[x]=="Extended":
                 AvaiCmds.append(Cmds[x])
-        for x in range(len(MusicCmds)):
+        for x in range(0, len(MusicCmds)):
             if MusicLevels[x]=="Banned" or MusicLevels[x]=="Extended":
                 AvaiMusic.append(MusicCmds[x])
     elif not acctest("Banned", message.author.id):
-        for x in range(len(Cmds)):
-            if CmdsLevels[x]=="Banned":
+        for x in range(0, len(Cmds)):
+            if CmdLevels[x]=="Banned":
                 AvaiCmds.append(Cmds[x])
-        for x in range(len(MusicCmds)):
+        for x in range(0, len(MusicCmds)):
             if MusicLevels[x]=="Banned":
                 AvaiMusic.append(MusicCmds[x])
 

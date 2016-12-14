@@ -158,6 +158,14 @@ async def on_ready():
 
 
 
+def inChannel(message):
+    if message.channel.id==Settings.Chat_Channel:
+        return True
+    else:
+        return False
+
+
+
 def list_files(path):
 
     files = []
@@ -640,7 +648,7 @@ async def on_message(message):
 
                 cooldown=1
 
-                if not acctest("Banned", message.author.id):
+                if not acctest("Banned", message.author.id) and inChannel(message):
 
                     await cmd_search(message)
 
@@ -656,7 +664,7 @@ async def on_message(message):
 
                 cooldown=1
 
-                if acctest("Extended", message.author.id):
+                if acctest("Extended", message.author.id) and inChannel(message):
 
                     await cmd_skip(message)
 
@@ -672,7 +680,7 @@ async def on_message(message):
 
                 cooldown=1
 
-                if acctest("Extended", message.author.id):
+                if acctest("Extended", message.author.id) and inChannel(message):
 
                     await cmd_volume(message)
 
@@ -688,7 +696,7 @@ async def on_message(message):
 
                 cooldown=1
 
-                if acctest("Extended", message.author.id):
+                if acctest("Extended", message.author.id) and inChannel(message):
 
                     await cmd_pause(message)
 
@@ -704,7 +712,7 @@ async def on_message(message):
 
                 cooldown=1
 
-                if acctest("Extended", message.author.id):
+                if acctest("Extended", message.author.id) and inChannel(message):
 
                     await cmd_resume(message)
 
@@ -720,7 +728,7 @@ async def on_message(message):
 
                 cooldown=1
 
-                if acctest("Extended", message.author.id):
+                if acctest("Extended", message.author.id) and inChannel(message):
 
                     await cmd_repeat(message)
 
@@ -736,7 +744,7 @@ async def on_message(message):
 
                 cooldown=1
 
-                if acctest("Extended", message.author.id):
+                if acctest("Extended", message.author.id) and inChannel(message):
 
                     await cmd_playlist(message)
 
@@ -752,7 +760,7 @@ async def on_message(message):
 
                 cooldown=1
 
-                if acctest("Extended", message.author.id):
+                if acctest("Extended", message.author.id) and inChannel(message):
 
                     await cmd_stop(message)
 
@@ -768,7 +776,7 @@ async def on_message(message):
 
                 cooldown=1
 
-                if acctest("Owner", message.author.id):
+                if acctest("Owner", message.author.id) and inChannel(message):
 
                     await cmd_shutdown(message)
 
@@ -784,7 +792,7 @@ async def on_message(message):
 
                 cooldown=1
 
-                if not acctest("Banned", message.author.id):
+                if not acctest("Banned", message.author.id) and inChannel(message):
 
                     await cmd_url(message)
 
@@ -800,7 +808,7 @@ async def on_message(message):
 
                 cooldown=1
 
-                if acctest("Extended", message.author.id):
+                if acctest("Extended", message.author.id) and inChannel(message):
 
                     await cmd_clear(message)
 
@@ -816,16 +824,8 @@ async def on_message(message):
 
                 cooldown=1
 
-                if not acctest("Banned", message.author.id):
+                if not acctest("Banned", message.author.id) and inChannel(message):
 
                     await cmd_playlists(message)
-
-        else:
-
-            if message.content.startswith(prefix):
-
-                await client.send_message(message.channel, "I can't take orders from you here baka... It's too.... public..")
-
-
 
 client.run(Settings.Token)
