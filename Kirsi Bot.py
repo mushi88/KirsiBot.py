@@ -268,23 +268,23 @@ async def cmd_cmds(message):
         for x in range(len(Cmds)):
             if CmdsLevels[x]=="Banned":
                 AvaiCmds.append(Cmds[x])
-        for x in range(len(MusicCmds))
+        for x in range(len(MusicCmds)):
             if MusicLevels[x]=="Banned":
                 AvaiMusic.append(MusicCmds[x])
-                
+
     await client.send_message(message.channel, "Commands:\n```"+'\n\n'.join(AvaiCmds)+"```")
     await client.send_message(message.channel, "Music:\n```"+'\n\n'.join(AvaiMusic)+"```")
 
 
 async def cmd_pingpong(message):
-    await client.send_message(message.channel, "Pong!")    
+    await client.send_message(message.channel, "Pong!")
 
 ## Func Exec
 
 @client.event
 async def on_message(message):
     global cooldown
-    
+
     if message.content.lower().startswith(prefix+'test'):
         if not cooldown:
             cooldown=True
