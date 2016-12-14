@@ -13,7 +13,7 @@ set var=0
 cls
 :srcds
 title Launcher - Restarted %var% times...
-echo (%time%) Server started.
+echo (%time%) Bot started.
 start /wait Kirsi" "Bot.py
 set /a var+=1
 echo.
