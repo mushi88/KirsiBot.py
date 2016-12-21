@@ -11,6 +11,8 @@ import types
 import os
 import time
 import sys
+import random
+import subprocess
 
 sys.setrecursionlimit(sys.maxsize)
 
@@ -234,8 +236,9 @@ async def cmd_music(message):
     if not musico:
         Execute("theBot\\Kirsi Music.py")
         musico=True
+        await client.send_message(message.channel, "Music client started.")
     else:
-        await client.send_message(message.channel, "Music already started.")
+        await client.send_message(message.channel, "Music client already started.")
 
 
 async def cmd_cmds(message):
@@ -278,6 +281,8 @@ async def cmd_cmds(message):
 
 async def cmd_pingpong(message):
     await client.send_message(message.channel, "Pong!")
+
+
 
 ## Func Exec
 
