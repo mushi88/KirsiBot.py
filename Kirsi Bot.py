@@ -14,7 +14,7 @@ import sys
 import random
 import subprocess
 
-sys.setrecursionlimit(sys.maxsize)
+sys.setrecursionlimit(sys.maxsize) # TODO: Fix crashing. [Cause may be thread]
 
 prefix=Settings.Prefix
 client = discord.Client()
@@ -26,8 +26,8 @@ valid_prefixx = ["`", ", ", "~", ", ", "!", ", ", "#", ", ", "$", ", ", "%", ", 
 valid_prefix = ''.join(valid_prefixx)
 valid_prefixx = ["`", "~", "!", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "="]
 
-MusicCmds=[prefix+"Search", prefix+"Volume", prefix+"Pause", prefix+"Resume", prefix+"Skip", prefix+"Clear", prefix+"Playlist", prefix+"Stop", prefix+"Shutdown", prefix+"Repeat", prefix+"Url", prefix+"Playlists"]
-Cmds=[prefix+"Test", prefix+"Sleep", prefix+"Purge", prefix+"Shutdown", prefix+"Access", prefix+"Music", prefix+"Ping!", prefix+"Cmds"]
+MusicCmds=[prefix+"Search - Search for a song ["+prefix+"search <SongName>]", prefix+"Volume - Set volume ["+prefix+"volume <#>]", prefix+"Pause - Pause song ["+prefix+"pause]", prefix+"Resume - Resumes song after pauseing ["+prefix+"resume]", prefix+"Skip - Skips song if there is another song in queue ["+prefix+"skip]", prefix+"Clear - Clears queue ["+prefix+"clear]", prefix+"Playlist - Changes queue to playist ["+prefix+"playlist <PlaylistName>]", prefix+"Stop - Stops current song, no resuming ["+prefix+"stop]", prefix+"Shutdown - Shuts down the bot ["+prefix+"shutdown]", prefix+"Repeat - toggles repeat on,  only works for one song ["+prefix+"repeat]", prefix+"Url - Shows URL of song playing ["+prefix+"url]", prefix+"Playlists - Shows available playlists ["+prefix+"playlists]"]
+Cmds=[prefix+"Test - Tests to see how many messages you have sent ["+prefix+"test]", prefix+"Sleep - Makes the bot sleep ["+prefix+"sleep <#>]", prefix+"Purge - Mass deletes messages ["+prefix+"purge <#>]", prefix+"Shutdown - Shuts down the bot ["+prefix+"shutdown]", prefix+"Access - Changes peoples access rank ["+prefix+"access]", prefix+"Music - Launched music client ["+prefix+"music]", prefix+"Ping! - Pong! ["+prefix+"ping]", prefix+"Cmds - Shows available commands ["+prefix+"cmds]"]
 MusicLevels=["Banned", "Extended", "Extended", "Extended", "Extended", "Extended", "Extended", "Extended", "Owner", "Extended", "Banned", "Banned"]
 CmdLevels=["Banned", "Extended", "Extended", "Owner", "Owner", "Full", "Banned", "Banned"]
 
@@ -76,17 +76,18 @@ def acctest(p, i):
             return False
 
 def check():
-    global loop
+    ##global loop
     global cooldown
-    if cooldown:
+    while True:
+        if cooldown:
+            time.sleep(1)
+            cooldown=False
         time.sleep(1)
-        cooldown=False
-    time.sleep(1)
-    if loop==sys.maxsize - 1:
-        sys.exit()
-    else:
-        loop += 1
-    check()
+    #if loop==sys.maxsize - 1:
+    #    sys.exit()
+    #else:
+    #    loop += 1
+    #check()
 
 def Execute(f):
     if sys.platform=="win32":
