@@ -131,7 +131,6 @@ def is_int_try(str):
 async def on_member_join(member):
     if Settings.WelcomeMessage:
         welcomechat=discord.utils.get(client.get_all_channels(), server__id=Settings.Server, id=Settings.Welcome_Channel)
-        await client.send_message(welcomechat, "Welcome to "+member.server+" "+member.mention+"!")
 
 def logger(message, command):
     print(message.author.name+" used command: "+command)
