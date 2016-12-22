@@ -13,6 +13,13 @@ import time
 import sys
 import random
 import subprocess
+import logging
+
+logger = logging.getLogger('discord')
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 sys.setrecursionlimit(sys.maxsize) # TODO: Fix crashing. [Cause may be thread]
 
@@ -80,9 +87,8 @@ def check():
     global cooldown
     while True:
         if cooldown:
-            time.sleep(1)
+            time.sleep(.2)
             cooldown=False
-        time.sleep(1)
     #if loop==sys.maxsize - 1:
     #    sys.exit()
     #else:
@@ -120,6 +126,12 @@ def is_int_try(str):
         return True
     except ValueError:
         return False
+
+@client.event
+async def on_member_join(member):
+    if Settings.WelcomeMessage:
+        welcomechat=discord.utils.get(client.get_all_channels(), server__id=Settings.Server, id=Settings.Welcome_Channel)
+        await client.send_message(welcomechat, "Welcome to "+member.server+" "+member.mention+"!")
 
 def logger(message, command):
     print(message.author.name+" used command: "+command)
