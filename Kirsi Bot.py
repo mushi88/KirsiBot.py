@@ -21,6 +21,7 @@ handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
+
 prefix=Settings.Prefix
 client = discord.Client()
 musico=False
@@ -129,6 +130,7 @@ def is_int_try(str):
 async def on_member_join(member):
     if Settings.WelcomeMessage:
         welcomechat=discord.utils.get(client.get_all_channels(), server__id=Settings.Server, id=Settings.Welcome_Channel)
+        await client.send_message(welcomechat, "Welcome to "+str(member.server.name)+" "+member.mention+"! Make sure to go to #terms_conditions-server-ranks to check out the terms and conditions!", tts=True)
 
 def logger(message, command):
     print(message.author.name+" used command: "+command)
@@ -266,7 +268,7 @@ async def cmd_cmds(message):
                 AvaiMusic.append(MusicCmds[x])
     elif acctest("Full", message.author.id):
         for x in range(0, len(Cmds)):
-            if CmdLevels[x]=="Banned" or CmdsLevels[x]=="Extended" or CmdsLevels[x]=="Full":
+            if CmdLevels[x]=="Banned" or CmdLevels[x]=="Extended" or CmdLevels[x]=="Full":
                 AvaiCmds.append(Cmds[x])
         for x in range(0, len(MusicCmds)):
             if MusicLevels[x]=="Banned" or MusicLevels[x]=="Extended" or MusicLevels[x]=="Full":
