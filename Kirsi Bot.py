@@ -266,7 +266,7 @@ async def cmd_cmds(message):
                 AvaiMusic.append(MusicCmds[x])
     elif acctest("Full", message.author.id):
         for x in range(0, len(Cmds)):
-            if CmdLevels[x]=="Banned" or CmdsLevel[x]=="Extended" or CmdsLevel[x]=="Full":
+            if CmdLevels[x]=="Banned" or CmdsLevels[x]=="Extended" or CmdsLevels[x]=="Full":
                 AvaiCmds.append(Cmds[x])
         for x in range(0, len(MusicCmds)):
             if MusicLevels[x]=="Banned" or MusicLevels[x]=="Extended" or MusicLevels[x]=="Full":
