@@ -156,7 +156,8 @@ async def on_ready():
 
     checkerrun
 
-
+async def sm(channel, text):
+    await client.send_message(channel, text)
 
 def inChannel(message):
     if message.channel.id==Settings.Chat_Channel:
@@ -258,13 +259,13 @@ async def download(video):
 
                 last=="NowPlaying"
 
-                print("\n\nNow playing: "+player.title+" (%s)" % dur)
+                print("\n\nNow playing: "+str(player.title)+" (%s)" % str(dur))
 
             await client.send_message(vchannel, "Now playing: "+player.title+" (%s)" % dur)
 
         except:
 
-            print("Now playing: "+player.title+" (%s)" % dur)
+            print("Now playing: "+str(player.title)+" (%s)" % str(dur))
 
             await client.send_message(vchannel, "Error playing: %s. Skipping..." % player.title)
 
@@ -296,7 +297,7 @@ def get_playlist(path):
 
     num_lines = sum(1 for line in open(path))
 
-    for x in range(0, num_lines*50):
+    for x in range(0, num_lines*500):
 
         temp=random.choice(open(path).readlines())
 
@@ -476,7 +477,7 @@ async def cmd_pause(message):
 
     if not user.game==None:
 
-        await client.change_status(game=discord.Game(name="[P] "+player.title))
+        await client.change_presence(game=discord.Game(name="[P] "+player.title))
 
         await client.send_message(message.channel, "Paused.")
 
@@ -560,8 +561,6 @@ async def cmd_playlist(message):
 
         await client.send_message(message.channel, "Changing queue to playlist: "+msg.lower().capitalize())
 
-        queue.clear()
-
         num_lines = sum(1 for line in open(file) if line.rstrip())
 
         get_playlist(file)
@@ -624,7 +623,78 @@ async def cmd_playlists(message):
 
     await client.send_message(message.channel, "Playlists:\n```-"+"\n\n-".join(playlists)+"```")
 
-
+async def cmd_editplaylists(message):
+    urls=[]
+    canceled=False
+    pname=None
+    while 1:
+        await client.send_message(message.channel, "Options:\n```\n1) Create\n2) Remove\n3) Exit\n```")
+        msg=await client.wait_for_message(timeout=10, author=message.author, channel=message.channel)
+        if msg==None:
+            await sm(message.channel, "No reply recieved, exitting options.")
+            break
+        elif msg.content=="3":
+            break
+        elif msg.content=="1":
+            await sm(message.channel, "Enter YouTube Video URL's as seperate messages. Do not put Playlist URL's in, they do not work.\nSend 3 at any point to stop entering urls.")
+            for i in range(1, 25):
+                yturl=await client.wait_for_message(author=message.author, channel=message.channel)
+                if yturl.content=="3":
+                    break
+                urls.append(yturl.content)
+                await sm(message.channel, "Appended. "+str(i)+"/25")
+            await sm(message.channel, "What will the playlist be called? (3 to cancel)")
+            while 1:
+                name=await client.wait_for_message(author=message.author, channel=message.channel)
+                if name.content=="3":
+                    canceled=True
+                    for x in range(0, len(urls)):
+                        url.pop(0)
+                    break
+                try:
+                    file=open(".\\theBot\\Playlists\\"+name.content.lower()+".txt", "r")
+                    file.close()
+                    await sm(message.channel, "Name already taken, please enter valid name:")
+                except:
+                    pname=name.content
+                    await sm(message.channel, "Name set, making playlist...")
+                    break
+            if canceled==True:
+                continue
+            else:
+                file=open(".\\theBot\\Playlists\\"+pname.lower()+".txt", "w")
+                for x in range(0, len(urls)):
+                    if urls[x].startswith("https://www.youtube.com/watch?v="):
+                        urls[x]=urls[x][len("https://www.youtube.com/watch?v="):]
+                    if "&list=" in urls[x]:
+                        continue
+                    else:
+                        if len(urls[x])==11:
+                            if not x==0:
+                                file.write("\n")
+                            file.write(urls[x])
+                file.close()
+                for x in range(0, len(urls)):
+                    url.pop(0)
+                await sm(message.channel, "Done")
+        elif msg.content=="2":
+            await sm(message.channel, "Enter playlist name, or ```Exit``` to exit.")
+            while 1:
+                remname=await client.wait_for_message(timeout=10, author=message.author, channel=message.channel)
+                if remname==None:
+                    await sm(message.channel, "No reply recieved, exited.")
+                    break
+                elif remname.content.lower()=="exit":
+                    break
+                else:
+                    try:
+                        file=open(".\\theBot\\Playlists\\"+remname.lower()+".txt", "r")
+                        file.close()
+                        os.remove(".\\theBot\\Playlists\\"+remname.lower()+".txt")
+                        await sm(message.channel, "Removed.")
+                    except:
+                        await sm(message.channel, "Playlist not found.")
+                
 
 # -------------------- Command Exec
 
@@ -827,5 +897,10 @@ async def on_message(message):
                 if not acctest("Banned", message.author.id) and inChannel(message):
 
                     await cmd_playlists(message)
+
+            elif message.content.lower().startswith(prefix+"editplaylists"):
+                cooldown=1
+                if acctest("Owner", message.author.id) and inChannel(message):
+                    await cmd_editplaylists(message)
 
 client.run(Settings.Token)
