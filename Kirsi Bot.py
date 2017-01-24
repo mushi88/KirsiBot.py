@@ -135,6 +135,9 @@ async def on_member_join(member):
 def logger(message, command):
     print(message.author.name+" used command: "+command)
 
+async def sm(channel, msg):
+    return await client.send_message(channel, msg)
+
 ## Cmd Funcs
 
 async def cmd_test(message):
@@ -194,53 +197,82 @@ async def cmd_shutdown(message):
 
 
 async def cmd_access(message):
-    user=message.content[len(prefix+"access "):]
-    To=None
-    if user.lower().startswith("full "):
-        To="Full"
-        user=user[len("full "):]
-    elif user.lower().startswith("extended "):
-        To="Extended"
-        user=user[len("extended "):]
-    elif user.lower().startswith("banned "):
-        To="Banned"
-        user=user[len("banned "):]
-    elif user.lower().startswith("owner "):
-        To="Owner"
-        user=user[len("owner "):]
-    else:
-        await client.send_message(message.channel, "Usage: \n ```"+prefix+"Access Owner/Full/Extended/Banned Grant/Remove Name```")
-    if user.lower().startswith("grant "):
-        user=user[len("grant "):]
-        user=discord.utils.get(client.get_all_members(), server__id=message.server.id, name=user)
-        name=user
-        if not user==None:
-            user=user.id
-            if not acctest(To, user):
-                file=open(".\\theBot\\Access\\"+To+"\\"+user+".txt", "w")
-                file.write(user)
-                file.close()
-                await client.send_message(message.channel, message.author.mention+", Added "+str(name)+" to "+To+" list.")
+    while 1:
+        tempmessage=await client.send_message(message.channel, "Access Options (Send **Cancel** at any time to cancel.):\n```What is the name of the user you would like to change the permissions of?```")
+        Options=await client.wait_for_message(timeout=10, author=message.author, channel=message.channel)
+        if not Options==None:
+            if Options.content.lower()=="cancel":
+                await client.delete_message(tempmessage)
+                break
             else:
-                await client.send_message(message.channel, message.author.mention+", User already in list.")
+                user=discord.utils.get(client.get_all_members(), server__id=message.server.id, name=user)
+                name=user
+                if not user==None:
+                    To=None
+                    nTo=None
+                    user=user.id
+                    if acctest("Full", user):
+                        To="Full"
+                    elif acctest("Extended", user):
+                        To="Extended"
+                    elif acctest("Banned", user):
+                        To="no"
+                    elif acctest("Owner", user):
+                        To="Owner"
+                    else:
+                        To="Normal"
+                    await client.delete_message(tempmessage)
+                    while 1:
+                        tempmessage=await client.send_message(message.channel, Options.content+" currently has "+To+" permissions.\n**What permission level do you want to give them?\n```1) Owner\n2) Full\n3) Extended\n4) Normal\n5) None```")
+                        Options=await client.wait_for_message(timeout=10, author=message.author, channel=message.channel)
+                        if not Options==None:
+                            if Options.content.lower()=="cancel":
+                                await client.delete_message(tempmessage)
+                                break
+                            else:
+                                if To=="no":
+                                    To="Banned"
+                                os.remove(".\\theBot\\Access\\"+To+"\\"+user+".txt")
+                                Options=Options.content
+                                if Options=="1":
+                                    nTo="Owner"
+                                elif Options=="2":
+                                    nTo="Full"
+                                elif Options=="3":
+                                    nTo="Extended"
+                                elif Options=="4":
+                                    nTo=None
+                                elif Options=="5":
+                                    nTo="Banned"
+                                else:
+                                    await client.delete_message(tempmessage)
+                                    continue
+                                if not nTo==None:
+                                    file=open(".\\theBot\\Access\\"+nTo+"\\"+user+".txt", "w")
+                                    file.write(user)
+                                    file.close()
+                                else:
+                                    nTo=="Normal"
+                                await client.send_message(message.channel, message.author.mention+", Gave "+str(name)+" "+nTo+" permissions.")
+                        else:
+                            await client.delete_message(tempmessage)
+                            tempmessage=await client.send_message(message.channel, "No reply recieved.")
+                            time.sleep(2)
+                            await client.delete_message(tempmessage)
+                            break
+                else:
+                    await client.delete_message(tempmessage)
+                    tempmessage=await client.send_message(message.channel, "Could not find user specified.")
+                    time.sleep(2)
+                    await client.delete_message(tempmessage)
+                    continue
         else:
-            await client.send_message(message.channel, "Could not find user specified.")
-    elif user.lower().startswith("remove "):
-        user=user[len("remove "):]
-        user=discord.utils.get(client.get_all_members(), server__id=message.server.id, name=user)
-        name=user
-        if not user==None:
-            user=user.id
-            if acctest(To, user):
-                try:
-                    os.remove(".\\theBot\\Access\\"+To+"\\"+user+".txt")
-                    await client.send_message(message.channel, message.author.mention+", Removed "+str(name)+" from "+To+" list.")
-                except:
-                    await client.send_message(message.channel, "Failed to remove..")
-            else:
-                await client.send_message(message.channel, "Failed, user not in list.")
-        else:
-            await client.send_message(message.channel, message.author.mention+", User not found.")
+            await client.delete_message(tempmessage)
+            tempmessage=await client.send_message(message.channel, "No reply recieved, Access Options closed.")
+            time.sleep(2)
+            await client.delete_message(tempmessage)
+            break
+
 
 
 async def cmd_music(message):
