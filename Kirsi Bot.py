@@ -232,7 +232,10 @@ async def cmd_access(message):
                             else:
                                 if To=="no":
                                     To="Banned"
-                                os.remove(".\\theBot\\Access\\"+To+"\\"+user+".txt")
+                                try:
+                                    os.remove(".\\theBot\\Access\\"+To+"\\"+user+".txt")
+                                except:
+                                    Ow="Ow"
                                 Options=Options.content
                                 if Options=="1":
                                     nTo="Owner"
