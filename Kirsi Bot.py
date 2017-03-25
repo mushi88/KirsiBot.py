@@ -205,7 +205,7 @@ async def cmd_access(message):
                 await client.delete_message(tempmessage)
                 break
             else:
-                user=discord.utils.get(client.get_all_members(), server__id=message.server.id, name=user)
+                user=discord.utils.get(client.get_all_members(), server__id=message.server.id, name=Options.content)
                 name=user
                 if not user==None:
                     To=None
