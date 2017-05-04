@@ -1,5 +1,3 @@
-Please ignore the settings file, it does nothing right now.
-
 ### --- Setup instructions --- ###
 
 Goto Bot\\Settings.py and edit it to your liking.
